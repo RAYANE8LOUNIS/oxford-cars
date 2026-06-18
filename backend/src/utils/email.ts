@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY || '');
+const getResend = () => new Resend(process.env.RESEND_API_KEY || 'placeholder');
 
 const BRAND_COLOR = '#C9A96E';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'Oxford Cars <noreply@oxfordcars.dz>';
@@ -142,7 +142,7 @@ export async function sendReservationConfirmation(data: {
   `;
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM_EMAIL,
       to: data.to,
       subject: `Réservation Oxford Cars — ${data.reservation_number}`,
@@ -210,7 +210,7 @@ export async function sendAdminNotification(data: {
   `;
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM_EMAIL,
       to: process.env.ADMIN_EMAIL,
       subject: `🚗 Nouvelle réservation — ${data.reservation_number} — ${data.guest_name}`,
