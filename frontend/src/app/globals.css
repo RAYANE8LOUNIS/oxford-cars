@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-black: #0A0A0A;
+  --color-charcoal: #1C1C1C;
+  --color-gold: #C9A96E;
+  --color-gold-light: #DFC28A;
+  --color-gold-dark: #A6813E;
+  --color-ivory: #F5F0E8;
+  --color-ivory-dark: #EDE5D5;
+  --font-inter: 'Inter', sans-serif;
+  --font-playfair: 'Playfair Display', serif;
+  --font-cormorant: 'Cormorant Garamond', serif;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--color-black);
+  color: var(--color-ivory);
+  font-family: var(--font-inter);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-charcoal); }
+::-webkit-scrollbar-thumb { background: var(--color-gold-dark); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-gold); }
+
+/* Selection */
+::selection { background: var(--color-gold); color: var(--color-black); }
+
+/* Gold gradient text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #C9A96E 0%, #DFC28A 50%, #A6813E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Luxury border */
+.luxury-border {
+  border: 1px solid rgba(201, 169, 110, 0.2);
+}
+
+.luxury-border-gold {
+  border: 1px solid rgba(201, 169, 110, 0.5);
+}
+
+/* Gold divider */
+.gold-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #C9A96E, transparent);
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(28, 28, 28, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.glass-light {
+  background: rgba(245, 240, 232, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Luxury card hover */
+.luxury-card {
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.luxury-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(201, 169, 110, 0.2);
+}
+
+/* Page transition */
+.page-transition {
+  animation: pageIn 0.6s ease-out;
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Loading shimmer */
+.shimmer {
+  background: linear-gradient(90deg, #1C1C1C 25%, #2A2A2A 50%, #1C1C1C 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Input focus */
+.luxury-input {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(201, 169, 110, 0.2);
+  color: var(--color-ivory);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.luxury-input:focus {
+  outline: none;
+  border-color: rgba(201, 169, 110, 0.6);
+  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.1);
+}
+
+.luxury-input::placeholder {
+  color: rgba(245, 240, 232, 0.3);
+}
+
+/* Button base */
+.btn-gold {
+  background: linear-gradient(135deg, #C9A96E, #DFC28A, #A6813E);
+  color: var(--color-black);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-gold::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-gold:hover::after { opacity: 1; }
+.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(201, 169, 110, 0.3); }
+.btn-gold:active { transform: translateY(0); }
+
+.btn-outline-gold {
+  background: transparent;
+  border: 1px solid rgba(201, 169, 110, 0.5);
+  color: var(--color-gold);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-gold:hover {
+  background: rgba(201, 169, 110, 0.1);
+  border-color: var(--color-gold);
+}
+
+/* Typography helpers */
+.heading-display {
+  font-family: var(--font-cormorant);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.heading-serif {
+  font-family: var(--font-playfair);
+  font-weight: 500;
+}
+
+/* Status badges */
+.status-pending { color: #F59E0B; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); }
+.status-confirmed { color: #10B981; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); }
+.status-active { color: #3B82F6; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); }
+.status-completed { color: #8B5CF6; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.2); }
+.status-cancelled { color: #EF4444; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); }
+.status-rejected { color: #EF4444; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+/* Date picker overrides */
+.react-datepicker {
+  font-family: var(--font-inter) !important;
+  background: #1C1C1C !important;
+  border: 1px solid rgba(201, 169, 110, 0.3) !important;
+  border-radius: 8px !important;
+  color: var(--color-ivory) !important;
+}
+
+.react-datepicker__header {
+  background: #0A0A0A !important;
+  border-bottom: 1px solid rgba(201, 169, 110, 0.2) !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name,
+.react-datepicker-time__header {
+  color: var(--color-ivory) !important;
+}
+
+.react-datepicker__day {
+  color: var(--color-ivory) !important;
+}
+
+.react-datepicker__day:hover {
+  background: rgba(201, 169, 110, 0.2) !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range,
+.react-datepicker__day--keyboard-selected {
+  background: var(--color-gold) !important;
+  color: var(--color-black) !important;
+}
+
+.react-datepicker__day--disabled { color: rgba(245, 240, 232, 0.2) !important; }
+
+/* Swiper overrides */
+.swiper-pagination-bullet {
+  background: rgba(201, 169, 110, 0.4) !important;
+}
+.swiper-pagination-bullet-active {
+  background: var(--color-gold) !important;
+}
