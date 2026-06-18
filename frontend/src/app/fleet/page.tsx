@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import VehicleCard from '@/components/ui/VehicleCard';
@@ -23,7 +23,7 @@ const transmissions = [
   { value: 'manual', label: 'Manual' },
 ];
 
-export default function FleetPage() {
+function FleetContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -67,7 +67,7 @@ export default function FleetPage() {
   const hasFilters = category || transmission || availableOnly || search;
 
   return (
-    <div className="min-h-screen bg-oxford-black pt-20">
+    <div className="min-h-screen bg-oxford-black pt-20" suppressHydrationWarning>
       {/* Hero */}
       <div className="relative py-20 lg:py-28 bg-oxford-charcoal border-b border-gold/10 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(201,169,110,0.07),transparent_60%)]" />
@@ -227,5 +227,13 @@ export default function FleetPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function FleetPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-oxford-black" />}>
+      <FleetContent />
+    </Suspense>
   );
 }

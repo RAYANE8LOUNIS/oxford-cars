@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Check, Info, AlertCircle, Star, Gift, Shield, Zap, User, UserPlus } from 'lucide-react';
@@ -43,7 +43,7 @@ const loyaltyBenefits = [
   { icon: <Shield size={16} />, text: 'Statut Client Fidèle & offres prioritaires' },
 ];
 
-export default function BookingPage() {
+function BookingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
@@ -543,5 +543,13 @@ export default function BookingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-oxford-black" />}>
+      <BookingContent />
+    </Suspense>
   );
 }
