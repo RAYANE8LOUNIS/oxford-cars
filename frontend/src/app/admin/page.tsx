@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Car, CalendarCheck, Users, BarChart3, MessageSquare,
-  Plus, Edit2, Trash2, Check, X, Eye, AlertCircle, TrendingUp
+  Plus, Edit2, Trash2, Check, X, Eye, AlertCircle, TrendingUp, FileText
 } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
 import { vehiclesApi, reservationsApi, adminApi, formatPrice } from '@/lib/api';
@@ -117,6 +117,14 @@ export default function AdminPage() {
     { id: 'messages', label: 'Messages', icon: <MessageSquare size={16} /> },
   ];
 
+  const contractsLink = (
+    <Link href="/admin/contracts"
+      className="flex items-center gap-3 px-4 py-3 text-sm text-ivory/60 hover:text-gold hover:bg-gold/5 transition-all rounded-sm border border-gold/20 mt-2">
+      <FileText size={16} />
+      <span>Générer un Contrat</span>
+    </Link>
+  );
+
   return (
     <div className="min-h-screen bg-oxford-black pt-20">
       {/* Admin header */}
@@ -151,6 +159,10 @@ export default function AdminPage() {
               {t.icon} {t.label}
             </button>
           ))}
+          <Link href="/admin/contracts"
+            className="flex items-center gap-2 px-5 py-2.5 text-xs tracking-wider rounded-sm border border-gold/30 text-gold/70 hover:text-gold hover:border-gold/60 transition-all">
+            <FileText size={16} /> Contrats
+          </Link>
         </div>
 
         {loading && (
