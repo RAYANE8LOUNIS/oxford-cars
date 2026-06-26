@@ -2,18 +2,30 @@ import { Router, Request, Response } from 'express';
 import { query } from '../db';
 import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth';
 import multer from 'multer';
-import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
 
 const router = Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, process.env.UPLOAD_PATH || 'uploads/'),
-  filename: (req, file, cb) => {
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, `vehicle-${unique}${path.extname(file.originalname)}`);
-  }
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+
+async function uploadToCloudinary(buffer: Buffer, filename: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'oxford-cars/vehicles', public_id: filename, overwrite: true },
+      (err, result) => {
+        if (err || !result) return reject(err);
+        resolve(result.secure_url);
+      }
+    );
+    stream.end(buffer);
+  });
+}
 
 // GET all vehicles (with filters)
 router.get('/', async (req: Request, res: Response) => {
@@ -43,7 +55,6 @@ router.get('/:id', async (req: Request, res: Response) => {
     const result = await query('SELECT * FROM vehicles WHERE id = $1', [req.params.id]);
     if (!result.rows[0]) return res.status(404).json({ error: 'Vehicle not found' });
 
-    // Get reviews
     const reviews = await query(
       `SELECT r.*, u.first_name, u.last_name FROM reviews r
        LEFT JOIN users u ON r.user_id = u.id
@@ -87,11 +98,17 @@ router.post('/', authenticate, requireAdmin, upload.array('images', 10), async (
   } = req.body;
 
   const files = req.files as Express.Multer.File[];
-  const images = files?.map(f => `/uploads/${f.filename}`) || [];
-  const thumbnail = images[0] || null;
   const featuresArray = features ? (Array.isArray(features) ? features : features.split(',').map((f: string) => f.trim())) : [];
 
   try {
+    let images: string[] = [];
+    if (files?.length) {
+      images = await Promise.all(
+        files.map(f => uploadToCloudinary(f.buffer, `vehicle-${Date.now()}-${Math.random().toString(36).slice(2)}`))
+      );
+    }
+    const thumbnail = images[0] || null;
+
     const result = await query(
       `INSERT INTO vehicles (name, brand, model, year, category, transmission, fuel_type, seats, doors, color, license_plate, daily_price, weekly_price, monthly_price, deposit_amount, description, features, images, thumbnail, is_featured)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) RETURNING *`,
@@ -113,13 +130,19 @@ router.put('/:id', authenticate, requireAdmin, upload.array('images', 10), async
   } = req.body;
 
   const files = req.files as Express.Multer.File[];
-  const newImages = files?.map(f => `/uploads/${f.filename}`) || [];
-  const existingImgs = existing_images ? (Array.isArray(existing_images) ? existing_images : [existing_images]) : [];
-  const allImages = [...existingImgs, ...newImages];
-  const thumbnail = allImages[0] || null;
   const featuresArray = features ? (Array.isArray(features) ? features : features.split(',').map((f: string) => f.trim())) : [];
+  const existingImgs = existing_images ? (Array.isArray(existing_images) ? existing_images : [existing_images]) : [];
 
   try {
+    let newImages: string[] = [];
+    if (files?.length) {
+      newImages = await Promise.all(
+        files.map(f => uploadToCloudinary(f.buffer, `vehicle-${Date.now()}-${Math.random().toString(36).slice(2)}`))
+      );
+    }
+    const allImages = [...existingImgs, ...newImages];
+    const thumbnail = allImages[0] || null;
+
     const result = await query(
       `UPDATE vehicles SET name=$1,brand=$2,model=$3,year=$4,category=$5,transmission=$6,fuel_type=$7,seats=$8,doors=$9,color=$10,daily_price=$11,weekly_price=$12,monthly_price=$13,deposit_amount=$14,description=$15,features=$16,images=$17,thumbnail=$18,is_available=$19,is_featured=$20
        WHERE id=$21 RETURNING *`,
@@ -128,6 +151,7 @@ router.put('/:id', authenticate, requireAdmin, upload.array('images', 10), async
     if (!result.rows[0]) return res.status(404).json({ error: 'Vehicle not found' });
     res.json(result.rows[0]);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Failed to update vehicle' });
   }
 });
