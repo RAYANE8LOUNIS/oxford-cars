@@ -314,6 +314,20 @@ function generateContractHTML(d: ContractData): string {
 </html>`;
 }
 
+function Field({ label, k, type = 'text', placeholder = '', form, onChange }: {
+  label: string; k: keyof ContractData; type?: string; placeholder?: string;
+  form: ContractData; onChange: (k: keyof ContractData, v: string) => void;
+}) {
+  return (
+    <div>
+      <label className="text-ivory/40 text-xs tracking-wider block mb-1.5">{label}</label>
+      <input type={type} placeholder={placeholder}
+        className="luxury-input px-4 py-2.5 rounded-sm w-full text-sm"
+        value={form[k]} onChange={e => onChange(k, e.target.value)} />
+    </div>
+  );
+}
+
 export default function ContractsPage() {
   const router = useRouter();
   const [form, setForm] = useState<ContractData>(empty);
@@ -338,14 +352,6 @@ export default function ContractsPage() {
     win.document.close();
   };
 
-  const Field = ({ label, k, type = 'text', placeholder = '' }: { label: string; k: keyof ContractData; type?: string; placeholder?: string }) => (
-    <div>
-      <label className="text-ivory/40 text-xs tracking-wider block mb-1.5">{label}</label>
-      <input type={type} placeholder={placeholder}
-        className="luxury-input px-4 py-2.5 rounded-sm w-full text-sm"
-        value={form[k]} onChange={e => set(k, e.target.value)} />
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-oxford-black pt-20 pb-16">
@@ -378,9 +384,9 @@ export default function ContractsPage() {
           <div className="p-6 bg-oxford-charcoal border border-gold/10">
             <h2 className="text-ivory/60 text-xs tracking-widest uppercase mb-5">Informations du Contrat</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Field label="Numéro de contrat" k="numero_contrat" />
-              <Field label="Date du contrat" k="date_contrat" type="date" />
-              <Field label="Représentant Oxford Cars" k="loueur_representant" />
+              <Field form={form} onChange={set} label="Numéro de contrat" k="numero_contrat" />
+              <Field form={form} onChange={set} label="Date du contrat" k="date_contrat" type="date" />
+              <Field form={form} onChange={set} label="Représentant Oxford Cars" k="loueur_representant" />
             </div>
           </div>
 
@@ -388,14 +394,14 @@ export default function ContractsPage() {
           <div className="p-6 bg-oxford-charcoal border border-gold/10">
             <h2 className="text-ivory/60 text-xs tracking-widest uppercase mb-5">Informations Client</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Nom *" k="client_nom" placeholder="LOUNIS" />
-              <Field label="Prénom *" k="client_prenom" placeholder="Rayane" />
-              <Field label="Adresse *" k="client_adresse" placeholder="Rue des Martyrs, Tizi Ouzou" />
-              <Field label="Wilaya *" k="client_wilaya" placeholder="Tizi Ouzou (15)" />
-              <Field label="N° C.N.I. (Carte Nationale d'Identité) *" k="client_cin" placeholder="123456789" />
-              <Field label="N° Permis de Conduire *" k="client_permis" placeholder="ABC123456" />
-              <Field label="Téléphone *" k="client_telephone" placeholder="+213 770 000 000" />
-              <Field label="Email" k="client_email" type="email" placeholder="client@email.com" />
+              <Field form={form} onChange={set} label="Nom *" k="client_nom" placeholder="LOUNIS" />
+              <Field form={form} onChange={set} label="Prénom *" k="client_prenom" placeholder="Rayane" />
+              <Field form={form} onChange={set} label="Adresse *" k="client_adresse" placeholder="Rue des Martyrs, Tizi Ouzou" />
+              <Field form={form} onChange={set} label="Wilaya *" k="client_wilaya" placeholder="Tizi Ouzou (15)" />
+              <Field form={form} onChange={set} label="N° C.N.I. (Carte Nationale d'Identité) *" k="client_cin" placeholder="123456789" />
+              <Field form={form} onChange={set} label="N° Permis de Conduire *" k="client_permis" placeholder="ABC123456" />
+              <Field form={form} onChange={set} label="Téléphone *" k="client_telephone" placeholder="+213 770 000 000" />
+              <Field form={form} onChange={set} label="Email" k="client_email" type="email" placeholder="client@email.com" />
             </div>
           </div>
 
@@ -403,11 +409,11 @@ export default function ContractsPage() {
           <div className="p-6 bg-oxford-charcoal border border-gold/10">
             <h2 className="text-ivory/60 text-xs tracking-widest uppercase mb-5">Véhicule Loué</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Field label="Marque *" k="vehicule_marque" placeholder="Nissan" />
-              <Field label="Modèle *" k="vehicule_modele" placeholder="Qashqai" />
-              <Field label="Année *" k="vehicule_annee" placeholder="2025" />
-              <Field label="Immatriculation *" k="vehicule_immatriculation" placeholder="123-456-16" />
-              <Field label="Couleur" k="vehicule_couleur" placeholder="Blanc Nacré" />
+              <Field form={form} onChange={set} label="Marque *" k="vehicule_marque" placeholder="Nissan" />
+              <Field form={form} onChange={set} label="Modèle *" k="vehicule_modele" placeholder="Qashqai" />
+              <Field form={form} onChange={set} label="Année *" k="vehicule_annee" placeholder="2025" />
+              <Field form={form} onChange={set} label="Immatriculation *" k="vehicule_immatriculation" placeholder="123-456-16" />
+              <Field form={form} onChange={set} label="Couleur" k="vehicule_couleur" placeholder="Blanc Nacré" />
               <div>
                 <label className="text-ivory/40 text-xs tracking-wider block mb-1.5">Carburant</label>
                 <select className="luxury-input px-4 py-2.5 rounded-sm w-full text-sm"
@@ -415,7 +421,7 @@ export default function ContractsPage() {
                   {['Essence', 'Diesel', 'Hybride', 'Électrique'].map(f => <option key={f}>{f}</option>)}
                 </select>
               </div>
-              <Field label="Kilométrage au départ" k="kilometrage_depart" placeholder="12500" />
+              <Field form={form} onChange={set} label="Kilométrage au départ" k="kilometrage_depart" placeholder="12500" />
               <div>
                 <label className="text-ivory/40 text-xs tracking-wider block mb-1.5">Niveau carburant au départ</label>
                 <select className="luxury-input px-4 py-2.5 rounded-sm w-full text-sm"
@@ -430,13 +436,13 @@ export default function ContractsPage() {
           <div className="p-6 bg-oxford-charcoal border border-gold/10">
             <h2 className="text-ivory/60 text-xs tracking-widest uppercase mb-5">Détails de la Location</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Date de départ *" k="date_depart" type="date" />
-              <Field label="Date de retour *" k="date_retour" type="date" />
-              <Field label="Lieu de départ *" k="lieu_depart" placeholder="Tizi Ouzou – Centre-ville" />
-              <Field label="Lieu de retour *" k="lieu_retour" placeholder="Tizi Ouzou – Centre-ville" />
-              <Field label="Nombre de jours *" k="nb_jours" type="number" placeholder="3" />
-              <Field label="Prix par jour (DA) *" k="prix_jour" type="number" placeholder="6500" />
-              <Field label="Caution (DA)" k="caution" type="number" placeholder="50000" />
+              <Field form={form} onChange={set} label="Date de départ *" k="date_depart" type="date" />
+              <Field form={form} onChange={set} label="Date de retour *" k="date_retour" type="date" />
+              <Field form={form} onChange={set} label="Lieu de départ *" k="lieu_depart" placeholder="Tizi Ouzou – Centre-ville" />
+              <Field form={form} onChange={set} label="Lieu de retour *" k="lieu_retour" placeholder="Tizi Ouzou – Centre-ville" />
+              <Field form={form} onChange={set} label="Nombre de jours *" k="nb_jours" type="number" placeholder="3" />
+              <Field form={form} onChange={set} label="Prix par jour (DA) *" k="prix_jour" type="number" placeholder="6500" />
+              <Field form={form} onChange={set} label="Caution (DA)" k="caution" type="number" placeholder="50000" />
             </div>
 
             {/* Price summary */}
