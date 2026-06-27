@@ -23,6 +23,7 @@ export default function EditVehiclePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [newImages, setNewImages] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [form, setForm] = useState({
     name: '', brand: '', model: '', year: new Date().getFullYear(),
     category: 'suv', transmission: 'automatic', fuel_type: 'petrol',
@@ -54,6 +55,7 @@ export default function EditVehiclePage() {
         is_featured: v.is_featured || false,
         features: v.features || [],
       });
+      setExistingImages(v.images || []);
       setLoading(false);
     }).catch(() => { toast.error('Vehicle not found'); router.push('/admin'); });
   }, [id]);
@@ -76,6 +78,7 @@ export default function EditVehiclePage() {
           fd.append(k, String(v));
         }
       });
+      existingImages.forEach(url => fd.append('existing_images', url));
       newImages.forEach(img => fd.append('images', img));
       await vehiclesApi.update(id, fd);
       toast.success('Vehicle updated.');
@@ -223,6 +226,27 @@ export default function EditVehiclePage() {
             <textarea className="luxury-input px-4 py-3 rounded-sm w-full text-sm resize-none" rows={4}
               value={form.description} onChange={e => set('description', e.target.value)} />
           </div>
+
+          {/* Existing Images */}
+          {existingImages.length > 0 && (
+            <div className="p-6 bg-oxford-charcoal border border-gold/10">
+              <h2 className="text-ivory/60 text-xs tracking-widest uppercase mb-5">Photos actuelles</h2>
+              <div className="flex gap-3 flex-wrap">
+                {existingImages.map((url, i) => (
+                  <div key={i} className="relative w-28 h-20 rounded-sm overflow-hidden border border-gold/20 group">
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <button type="button"
+                      onClick={() => setExistingImages(prev => prev.filter((_, j) => j !== i))}
+                      className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+                      <X size={18} className="text-red-400" />
+                    </button>
+                    {i === 0 && <span className="absolute bottom-1 left-1 text-xs bg-gold/80 text-oxford-black px-1.5 py-0.5 rounded-sm">Principal</span>}
+                  </div>
+                ))}
+              </div>
+              <p className="text-ivory/30 text-xs mt-3">Survolez une photo et cliquez sur ✕ pour la supprimer</p>
+            </div>
+          )}
 
           {/* New Images */}
           <div className="p-6 bg-oxford-charcoal border border-gold/10">
