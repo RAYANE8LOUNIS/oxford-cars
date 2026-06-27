@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Printer, FileText } from 'lucide-react';
+import { ArrowLeft, Printer, FileText, Send } from 'lucide-react';
 import { formatPrice } from '@/lib/api';
 
 interface ContractData {
@@ -352,6 +352,27 @@ export default function ContractsPage() {
     win.document.close();
   };
 
+  const handleSendWhatsApp = () => {
+    const phone = form.client_telephone.replace(/\D/g, '');
+    const total = parseFloat(form.prix_jour || '0') * parseInt(form.nb_jours || '0') + parseFloat(form.caution || '0');
+    const fmt = (n: number) => new Intl.NumberFormat('fr-DZ').format(n) + ' DA';
+    const fmtDate = (s: string) => s ? new Date(s).toLocaleDateString('fr-DZ', { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
+    const msg = `Bonjour ${form.client_prenom} ${form.client_nom},
+
+Oxford Cars vous confirme votre contrat de location N° *${form.numero_contrat}* :
+
+🚗 *Véhicule :* ${form.vehicule_marque} ${form.vehicule_modele} ${form.vehicule_annee}
+📅 *Départ :* ${fmtDate(form.date_depart)}
+📅 *Retour :* ${fmtDate(form.date_retour)}
+📍 *Lieu :* ${form.lieu_depart}
+💰 *Total :* ${fmt(total)}
+
+Pour toute question, contactez-nous au +213 770 12 37 71.
+
+_Oxford Cars — Drive Distinction_`;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+
 
   return (
     <div className="min-h-screen bg-oxford-black pt-20 pb-16">
@@ -368,6 +389,10 @@ export default function ContractsPage() {
             <p className="text-ivory/40 text-sm mt-1">Contrat de location conforme à la législation algérienne</p>
           </div>
           <div className="flex gap-3">
+            <button onClick={handleSendWhatsApp}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-sm text-xs tracking-widest border border-green-500/40 text-green-400 hover:border-green-500 hover:text-green-300 transition-all">
+              <Send size={14} /> Envoyer WhatsApp
+            </button>
             <button onClick={handlePreview}
               className="flex items-center gap-2 btn-outline-gold px-5 py-2.5 rounded-sm text-xs tracking-widest">
               <FileText size={14} /> Aperçu
@@ -473,7 +498,11 @@ export default function ContractsPage() {
           <div className="flex gap-4">
             <button onClick={handlePrint}
               className="btn-gold flex-1 py-4 rounded-sm text-xs tracking-widest flex items-center justify-center gap-2">
-              <Printer size={15} /> Imprimer / Enregistrer en PDF
+              <Printer size={15} /> Imprimer / PDF
+            </button>
+            <button onClick={handleSendWhatsApp}
+              className="flex-1 py-4 rounded-sm text-xs tracking-widest flex items-center justify-center gap-2 border border-green-500/40 text-green-400 hover:border-green-500 hover:text-green-300 transition-all">
+              <Send size={15} /> Envoyer WhatsApp
             </button>
             <button onClick={handlePreview}
               className="btn-outline-gold px-8 py-4 rounded-sm text-xs tracking-widest flex items-center gap-2">
